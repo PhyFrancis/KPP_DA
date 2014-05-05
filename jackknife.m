@@ -27,7 +27,7 @@ function jackknifed_data = jackknife(all_data,fit_range,frozen,correlated)
 			if correlated
 				jackknifed_data{i,2} = inv(cov(tmp'));
 			else
-				jackknifed_data{i,2} = inv(diag(mean(tmp,2)));
+				jackknifed_data{i,2} = inv(diag(std(tmp,0,2).^2));
 			end
 		end
 

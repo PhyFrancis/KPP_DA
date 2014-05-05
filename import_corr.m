@@ -11,6 +11,7 @@ function corr = import_corr(place,name,conf,field)
 	for traj = conf
 		trajs=int2str(traj);
 		if ~exist([place,'traj_',trajs,'_',name],'file')
+			fprintf('File %s doesnt exist!\n', ['traj_',trajs,'_',name]);
 			continue;
 		end
 		conf_count = conf_count + 1;
