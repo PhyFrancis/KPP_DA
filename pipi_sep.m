@@ -4,13 +4,13 @@
 place = '/home/daiqian/BGQ/32nt_kpp/L500_11_S0_11_Mu_0.000_Ms_0.045/';
 frozen = 0;% 1 if doing frozen jackknife
 correlated = 0; % 1 if doing correlated fitting
-cal_effMass = 0;
-all_traj = [320:8:336,342:8:500];
+cal_effMass = 1;
+all_traj = [320:8:336,342:8:400];
 t_size = 64;
 t_trans = 0:63;
 bin_size = 1;
 sep = 4;
-do_kaon = 0;
+do_kaon = 1;
 pion_name = 'pioncorr';
 kaon_name = 'kaoncorr';
 FigureC_name = ['FigureC','_sep',int2str(sep)];
@@ -22,7 +22,7 @@ pion_fit_range = 7:59;
 kaon_fit_range = 7:59; 
 I2_fit_range = [8:(32-sep),(34-sep):(58-2*sep)];
 I0V_fit_range = [8:(32-sep),(34-sep):(58-2*sep)];
-I0_fit_range = [7:(36-sep),(30-sep):(59-2*sep)];
+I0_fit_range = [7:(28-sep),(38-sep):(59-2*sep)];
 
 %2 pion calculation
 %2.1 import data
@@ -40,10 +40,7 @@ for i = 1:num_pioncorr
 end
 %2.4 effective mass
 if cal_effMass
-	pion_eff = eff_mass(jackknifed_pioncorr_full,t_size,zeros(num_pioncorr,1));
-	fp = fopen('pion_Meff','w');
-	fprintf(fp,'%d\t%.6f\t%.6f\n',pion_eff');
-	fclose(fp);
+	eff_mass(jackknifed_pioncorr_full, t_size, 0., num_pioncorr, 'pion_Meff');
 end
 
 %3 pipi calculation
@@ -91,18 +88,9 @@ for i = 1:num_I0
 end
 
 if cal_effMass
-	%3.4.1 effective mass for I2
-	I2_eff = eff_mass(jackknifed_I2_full,t_size-2*sep,I2_result(:,3));
-	fp = fopen('I2_Meff','w');
-	fprintf(fp,'%d\t%.6f\t%.6f\n',I2_eff');
-	%3.4.2 effective mass for I0V
-	I0V_eff = eff_mass(jackknifed_I0V_full,t_size-2*sep,I0V_result(:,3));
-	fp = fopen('I0V_Meff','w');
-	fprintf(fp,'%d\t%.6f\t%.6f\n',I0V_eff');
-	%3.4.3 effective mass for I0
-	I0_eff = eff_mass(jackknifed_I0_full_subtracted,t_size-2*sep,I0_result(:,3));
-	fp = fopen('I0_Meff','w');
-	fprintf(fp,'%d\t%.6f\t%.6f\n',I0_eff');
+	eff_mass(jackknifed_I2_full,  t_size - 2 * sep, mean(I2_result(:,3)),  num_I2,  'I2_Meff');
+	eff_mass(jackknifed_I0V_full, t_size - 2 * sep, mean(I0V_result(:,3)), num_I0V, 'I0V_Meff');
+	eff_mass(jackknifed_I0_full,  t_size - 2 * sep, mean(I0_result(:,3)),  num_I0,  'I0_Meff');
 end
 
 if do_kaon
@@ -122,15 +110,12 @@ if do_kaon
 	end
 	%4.4 effective mass
 	if cal_effMass
-		kaon_eff = eff_mass(jackknifed_kaoncorr_full,t_size,zeros(num_kaoncorr,1));
-		fp = fopen('kaon_Meff','w');
-		fprintf(fp,'%d\t%.6f\t%.6f\n',kaon_eff');
-		fclose(fp);
+		eff_mass(jackknifed_kaoncorr_full,  t_size, 0.,  num_kaoncorr,  'kaon_Meff');
 	end
 end
 
 %5 display result
-fileID = fopen('result','a');
+fileID = fopen('results','a');
 fprintf(fileID,'%s\n',datestr(clock));
 fprintf(fileID,'Data file:\t%s\n',place);
 

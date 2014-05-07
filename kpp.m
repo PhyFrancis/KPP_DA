@@ -5,11 +5,11 @@ place = '/home/daiqian/BGQ/32nt_kpp/L500_11_S0_11_Mu_0.000_Ms_0.045/';
 frozen = 0;% 1 if doing frozen jackknife
 correlated = 0; % 1 if doing correlated fitting
 cal_effMass = 0;
-%all_traj = [320:8:336,342:8:370];
-all_traj = [320:8:328];
+all_traj = [328:8:336,342:8:390];
+%all_traj = [320:8:328];
 t_size = 64;
 t_trans = 0:63;
-deltat = 12;
+deltat = 14;
 sep = 4;
 Type1_name = ['type1','_deltat_',int2str(deltat),'_sep_',int2str(sep)];
 Type2_name = ['type2','_deltat_',int2str(deltat),'_sep_',int2str(sep)];
@@ -19,29 +19,29 @@ bin_size = 1;
 field = 3; % 3rd colume of corr file is the real part of correlator
 
 %2 I0 kpipi calculation
+
 %2.1 import data
+FigureVdis = import_corr_bin(place,FigureVdis_name,all_traj,2,bin_size);
+Type1_data = tavg_import_corr_bin(place,Type1_name,all_traj,t_trans,2*[1:48]+1,t_size,bin_size);
+Type2_data = tavg_import_corr_bin(place,Type2_name,all_traj,t_trans,2*[1:48]+1,t_size,bin_size) * 0.5; % 0.5 because mom permutation
+Type3_data = tavg_import_corr_bin(place,Type3_name,all_traj,t_trans,2*[1:80]+1,t_size,bin_size) * 0.5; % 0.5 because mom permutation
 
-Type1 = cell(48,1);
-for i = 1:48
-	Type1{i,1} = tavg_import_corr_bin(place,Type1_name,all_traj,t_trans,2*i+1,t_size,bin_size);
+fprintf('Number of type1 file:\t%d\n',size(Type1_data,2)/48);
+fprintf('Number of type2 file:\t%d\n',size(Type2_data,2)/48);
+fprintf('Number of type3 file:\t%d\n',size(Type3_data,2)/80);
+
+%2.2 combine data
+Qi_type1 = combine_type1(Type1_data);
+Qi_type2 = combine_type2(Type2_data);
+Qi_type3 = combine_type3(Type3_data);
+
+avg_type1 = [];
+avg_type12 = [];
+for i = 1:10
+	avg_type1 = [avg_type1, mean(Qi_type1{i,1},2), std(Qi_type1{i,1},1,2)];
+	avg_type12 = [avg_type12, mean(Qi_type1{i,1}+Qi_type2{i,1},2), std(Qi_type1{i,1}+Qi_type2{i,1},1,2)];
 end
-fprintf('Number of type1 file:\t%d\n',size(Type1{i,1},2));
 
-Type2 = cell(48,1);
-for i = 1:48
-	Type2{i,1} = 0.5 * tavg_import_corr_bin(place,Type2_name,all_traj,t_trans,2*i+1,t_size,bin_size); % 0.5 because mom permutation
-end
-fprintf('Number of type2 file:\t%d\n',size(Type2{i,1},2));
-
-Type3 = cell(80,1);
-for i = 1:80
-	Type3{i,1} = 0.5 * tavg_import_corr_bin(place,Type3_name,all_traj,t_trans,2*i+1,t_size,bin_size); % 0.5 because mom permutation
-end
-fprintf('Number of type3 file:\t%d\n',size(Type3{i,1},2));
-
-Qi_type1 = combine_type1(Type1);
-%Qi_type2 = combine_type2(Type2);
-%Qi_type3 = combine_type3(Type3);
 %Q1 = - (1/3)^0.5*(-Type1{1,1}+Type1{2,1}+Type1{5,1}+Type1{6,1}+Type1{7,1}-Type1{8,1});
 %Q7 = - (0.5*3^0.5)*(-Type1{1,1}-Type1{2,1}+Type1{5,1}-Type1{6,1}+Type1{7,1}+Type1{8,1});
 %Q8 = - (0.5*3^0.5)*(-Type1{3,1}+Type1{4,1}-Type1{9,1}+Type1{10,1}+Type1{11,1}+Type1{12,1});
