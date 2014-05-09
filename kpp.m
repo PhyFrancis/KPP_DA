@@ -9,7 +9,7 @@ all_traj = [328:8:336,342:8:390];
 %all_traj = [320:8:328];
 t_size = 64;
 t_trans = 0:63;
-deltat = 14;
+deltat = 18;
 sep = 4;
 Type1_name = ['type1','_deltat_',int2str(deltat),'_sep_',int2str(sep)];
 Type2_name = ['type2','_deltat_',int2str(deltat),'_sep_',int2str(sep)];
@@ -41,6 +41,14 @@ for i = 1:10
 	avg_type1 = [avg_type1, mean(Qi_type1{i,1},2), std(Qi_type1{i,1},1,2)];
 	avg_type12 = [avg_type12, mean(Qi_type1{i,1}+Qi_type2{i,1},2), std(Qi_type1{i,1}+Qi_type2{i,1},1,2)];
 end
+
+fn_avg_type1  = ['type1_deltat',num2str(deltat)];
+fn_avg_type12 = ['type12_deltat',num2str(deltat)];
+csvwrite(fn_avg_type1 ,[[0:63]',avg_type1]);
+csvwrite(fn_avg_type12,[[0:63]',avg_type12]);
+system(['./change_csv.sh ',fn_avg_type1] ,'-echo');
+system(['./change_csv.sh ',fn_avg_type12] ,'-echo');
+
 
 %Q1 = - (1/3)^0.5*(-Type1{1,1}+Type1{2,1}+Type1{5,1}+Type1{6,1}+Type1{7,1}-Type1{8,1});
 %Q7 = - (0.5*3^0.5)*(-Type1{1,1}-Type1{2,1}+Type1{5,1}-Type1{6,1}+Type1{7,1}+Type1{8,1});
