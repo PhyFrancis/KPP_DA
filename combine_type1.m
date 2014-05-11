@@ -1,6 +1,6 @@
 function y = combine_type1(type1_data) 
-	% type1_data is a cell(48,1)
 	% y is a cell(10,1)
+	% type1 consistants of C1 to C6
 	
 	y = cell(10,1);
 
