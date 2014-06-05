@@ -1,7 +1,7 @@
 %data analysis for meson spectrum
 
 %1 initialize fitting parameters:
-place = '/home/daiqian/BGQ/32nt_kpp/L500_11_S0_11_Mu_0.000_Ms_0.045/';
+% place = '/home/daiqian/BGQ/32nt_kpp/L500_11_S0_11_Mu_0.000_Ms_0.045/';
 frozen = 0;% 1 if doing frozen jackknife
 correlated = 0; % 1 if doing correlated fitting
 cal_effMass = 1;
@@ -90,7 +90,7 @@ end
 if cal_effMass
 	eff_mass(jackknifed_I2_full,  t_size - 2 * sep, mean(I2_result(:,3)),  num_I2,  'I2_Meff');
 	eff_mass(jackknifed_I0V_full, t_size - 2 * sep, mean(I0V_result(:,3)), num_I0V, 'I0V_Meff');
-	eff_mass(jackknifed_I0_full,  t_size - 2 * sep, mean(I0_result(:,3)),  num_I0,  'I0_Meff');
+	eff_mass(jackknifed_I0_full_subtracted,  t_size - 2 * sep, mean(I0_result(:,3)),  num_I0,  'I0_Meff');
 end
 
 if do_kaon
@@ -115,31 +115,6 @@ if do_kaon
 end
 
 %5 display result
-fileID = fopen('results','a');
-fprintf(fileID,'%s\n',datestr(clock));
-fprintf(fileID,'Data file:\t%s\n',place);
-
-if(frozen)
-	fprintf('frozen ');
-	fprintf(fileID,'frozen ');
-else 
-	fprintf('unfrozen ');
-	fprintf(fileID, 'unfrozen ');
-end
-if(correlated)
-	fprintf('correlated\n');
-	fprintf(fileID, 'correlated\n');
-else 
-	fprintf('uncorrelated\n');
-	fprintf(fileID, 'uncorrelated\n');
-end
-
-fprintf(fileID,'Number of pion_corr file:\t%d\n',num_pioncorr);
-fprintf(fileID,'Number of I2 pipi file:\t%d\n',num_I2);
-fprintf(fileID,'Number of I0V pipi file:\t%d\n',num_I0V);
-fprintf(fileID,'Number of I0 pipi file:\t%d\n',num_I0);
-fprintf(fileID,'Pi Pi separation is:\t%d\n',sep);
-
 fprintf('pion mass:\t%.6f\t std:\t %.6f\n',mean(pion_result(:,1)),std(pion_result(:,1)) * sqrt(num_pioncorr-1));
 if do_kaon 
 	fprintf('kaon mass:\t%.6f\t std:\t %.6f\n',mean(kaon_result(:,1)),std(kaon_result(:,1)) * sqrt(num_kaoncorr-1));
@@ -147,6 +122,31 @@ end
 fprintf('pipi_I2 energy:\t%.6f\t std:\t %.6f\n',mean(I2_result(:,1)),std(I2_result(:,1)) * sqrt(num_I2-1));
 fprintf('pipi_I0V energy:\t%.6f\t std:\t %.6f\n',mean(I0V_result(:,1)),std(I0V_result(:,1)) * sqrt(num_I0V-1));
 fprintf('pipi_I0 energy:\t%.6f\t std:\t %.6f\n',mean(I0_result(:,1)),std(I0_result(:,1)) * sqrt(num_I0-1));
+
+%fileID = fopen('results','a');
+%fprintf(fileID,'%s\n',datestr(clock));
+%fprintf(fileID,'Data file:\t%s\n',place);
+%
+%if(frozen)
+%	fprintf('frozen ');
+%	fprintf(fileID,'frozen ');
+%else 
+%	fprintf('unfrozen ');
+%	fprintf(fileID, 'unfrozen ');
+%end
+%if(correlated)
+%	fprintf('correlated\n');
+%	fprintf(fileID, 'correlated\n');
+%else 
+%	fprintf('uncorrelated\n');
+%	fprintf(fileID, 'uncorrelated\n');
+%end
+%
+%fprintf(fileID,'Number of pion_corr file:\t%d\n',num_pioncorr);
+%fprintf(fileID,'Number of I2 pipi file:\t%d\n',num_I2);
+%fprintf(fileID,'Number of I0V pipi file:\t%d\n',num_I0V);
+%fprintf(fileID,'Number of I0 pipi file:\t%d\n',num_I0);
+%fprintf(fileID,'Pi Pi separation is:\t%d\n',sep);
 
 %fprintf(fileID,'pion mass:\t%.6f\t std:\t %.6f\t fit range:\t[%d:%d]\n',mean(pion_result(:,1)),std(pion_result(:,1)) * sqrt(num_pioncorr-1), pion_fit_range(1),pion_fit_range(size(pion_fit_range,2)));
 %fprintf(fileID,'pipi_I2 energy:\t%.6f\t std:\t %.6f\t fit range:\t[%d:%d]\n',mean(I2_result(:,1)),std(I2_result(:,1)) * sqrt(num_I2-1), I2_fit_range(1),I2_fit_range(size(I2_fit_range,2)));

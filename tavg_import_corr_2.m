@@ -29,6 +29,9 @@ function corr = tavg_import_corr_2(place,name,conf,t_range,field,T)
 		  if ~any(i==t_range)
 				continue;
 			end
+			if sum(sum(abs(corr_tmp1(i*T+1:(i+1)*T,field)))) == 0  % to rule out those un-computed tslice in Type1-4 contractions
+				continue;
+			end
 			corr_tmp2 = [corr_tmp2, corr_tmp1(i*T+1:(i+1)*T,field)];
 		end
 		corr = [corr , sum(corr_tmp2, 2)];
