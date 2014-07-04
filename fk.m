@@ -1,4 +1,5 @@
-% this file analysis fk : <K|\bar{s}\gamma_5 d|0>
+% this file analysis fk : <K|\bar{s}\gamma_5 d|0> 
+% TODO: consider sqrt(2) due to G-parity
 
 % initialize parameters
 run('conf.m');
