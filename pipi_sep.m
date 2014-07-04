@@ -1,14 +1,12 @@
 %data analysis for meson spectrum
 
 %1 initialize fitting parameters:
-% place = '/home/daiqian/BGQ/32nt_kpp/L500_11_S0_11_Mu_0.000_Ms_0.045/';
+run('conf.m');
+
 frozen = 0;% 1 if doing frozen jackknife
 correlated = 0; % 1 if doing correlated fitting
 cal_effMass = 1;
-% all_traj = [320:8:336,342:8:400];
-t_size = 64;
-t_trans = 0:63;
-bin_size = 1;
+t_trans = 0:(t_size-1);
 sep = 4;
 do_kaon = 1;
 pion_name = 'pioncorr';
@@ -18,11 +16,12 @@ FigureD_name = ['FigureD','_sep',int2str(sep)];
 FigureR_name = ['FigureR','_sep',int2str(sep)];
 FigureVdis_name = ['FigureVdis','_sep',int2str(sep)];
 field = 3; % 3rd colume of corr file is the real part of correlator
-pion_fit_range = 7:59; 
-kaon_fit_range = 7:59; 
-I2_fit_range = [8:(32-sep),(34-sep):(58-2*sep)];
-I0V_fit_range = [8:(32-sep),(34-sep):(58-2*sep)];
-I0_fit_range = [7:(28-sep),(38-sep):(59-2*sep)];
+pion_fit_range = 7:(t_size+2-7); 
+kaon_fit_range = 7:(t_size+2-7); 
+I2_fit_range = [8:(t_size/2-sep),(t_size/2+2-sep):(t_size+2-8-2*sep)];
+I0V_fit_range = [8:(t_size/2-sep),(t_size/2+2-sep):(t_size+2-8-2*sep)];
+% I0_fit_range = [7:(28-sep),(38-sep):(59-2*sep)];
+I0_fit_range = [7:(t_size/2-sep),(t_size/2+2-sep):(t_size+2-7-2*sep)];
 
 %2 pion calculation
 %2.1 import data
@@ -92,6 +91,17 @@ if cal_effMass
 	eff_mass(jackknifed_I0V_full, t_size - 2 * sep, mean(I0V_result(:,3)), num_I0V, 'I0V_Meff');
 	eff_mass(jackknifed_I0_full_subtracted,  t_size - 2 * sep, mean(I0_result(:,3)),  num_I0,  'I0_Meff');
 end
+%%3.3.4 phase shift
+q_I2 = (I2_result(:,1).^2 / 4 - mpi_rest^2).^0.5 * L_size / (2 * 3.1415926);
+phase_shift_I2 = [];
+for i = 1:num_I2
+	phase_shift_I2 = [phase_shift_I2; -phi_q_twist(q_I2(i),GparityX,GparityY,GparityZ)];
+end
+q_I0 = (I0_result(:,1).^2 / 4 - mpi_rest^2).^0.5 * L_size / (2 * 3.1415926);
+phase_shift_I0 = [];
+for i = 1:num_I0
+	phase_shift_I0 = [phase_shift_I0; -phi_q_twist(q_I0(i),GparityX,GparityY,GparityZ)];
+end
 
 if do_kaon
 	%4 kaon calculation
@@ -114,7 +124,24 @@ if do_kaon
 	end
 end
 
-%5 display result
+%6 LL factor
+FF_I0 = [];
+for i = 1:num_I0
+	FF_I0 = [FF_I0; 
+	(phase_shift_I0(i) / q_I0(i) + d_phi_d_q_twist(q_I0(i),GparityX,GparityY,GparityZ))^0.5 * kaon_result(i,1)^0.5 * I0_result(i,1) / 2^0.5 / 3.1415926 / q_I0(i) * L_size^1.5];
+end
+fn = ['Qi_result/FF_I0'];
+save(fn,'FF_I0');
+
+FF_I2 = [];
+for i = 1:num_I2
+	FF_I2 = [FF_I2; 
+	(phase_shift_I2(i) / q_I2(i) + d_phi_d_q_twist(q_I2(i),GparityX,GparityY,GparityZ))^0.5 * kaon_result(i,1)^0.5 * I2_result(i,1) / 2^0.5 / 3.1415926 / q_I2(i) * L_size^1.5];
+end
+fn = ['Qi_result/FF_I2'];
+save(fn,'FF_I2');
+
+%6 display result
 fprintf('pion mass:\t%.6f\t std:\t %.6f\n',mean(pion_result(:,1)),std(pion_result(:,1)) * sqrt(num_pioncorr-1));
 if do_kaon 
 	fprintf('kaon mass:\t%.6f\t std:\t %.6f\n',mean(kaon_result(:,1)),std(kaon_result(:,1)) * sqrt(num_kaoncorr-1));
@@ -122,6 +149,8 @@ end
 fprintf('pipi_I2 energy:\t%.6f\t std:\t %.6f\n',mean(I2_result(:,1)),std(I2_result(:,1)) * sqrt(num_I2-1));
 fprintf('pipi_I0V energy:\t%.6f\t std:\t %.6f\n',mean(I0V_result(:,1)),std(I0V_result(:,1)) * sqrt(num_I0V-1));
 fprintf('pipi_I0 energy:\t%.6f\t std:\t %.6f\n',mean(I0_result(:,1)),std(I0_result(:,1)) * sqrt(num_I0-1));
+fprintf('pipi_I2 phase shift:\t%.6f\t std:\t %.6f\n',mean(phase_shift_I2(:,1)),std(phase_shift_I2(:,1)) * sqrt(num_I2-1));
+fprintf('pipi_I0 phase shift:\t%.6f\t std:\t %.6f\n',mean(phase_shift_I0(:,1)),std(phase_shift_I0(:,1)) * sqrt(num_I0-1));
 
 %fileID = fopen('results','a');
 %fprintf(fileID,'%s\n',datestr(clock));

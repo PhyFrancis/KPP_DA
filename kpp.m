@@ -1,16 +1,12 @@
 % This file does K->PiPi(I=0) analysis
 
-place = '/home/daiqian/BGQ/32nt_kpp/L900_11_S0_11_Mu_0.000_Ms_0.045/';
-all_traj = [302:4:494];
-% place = '/home/daiqian/BGQ/32nt_kpp/L500_11_S0_11_Mu_0.000_Ms_0.045/';
-% all_traj = [328,336,342:8:398];
-% place = '/home/daiqian/BGQ/32nt_kpp/L500_L900_avg/';
-% all_traj = [342:8:398];
+% initialize parameters
+run('conf.m');
 
-%data analysis for meson mass
+% data analysis for meson mass
 run('pipi_sep.m');
 
-%data analysis for K -> PiPi (I=0)
+% data analysis for K -> PiPi (I=0)
 %1 initialize fitting parameters:
 frozen = 0;% 1 if doing frozen jackknife
 correlated = 0; % 1 if doing correlated fitting
@@ -18,14 +14,13 @@ cal_effMass = 0;
 t_size = 64;
 t_trans = 0:63; 
 sep = 4;
-DeltaT = 12:2:18;
+DeltaT = 10:2:10;
 FigureVdis_name = ['FigureVdis_sep',int2str(sep)];
-bin_size = 1;
 
 Qi_result_glb = [];
 for deltat = DeltaT
 
-	fit_range = 4:(deltat-4);
+	fit_range = 5:(deltat-3);
 	Type1_name = ['type1','_deltat_',int2str(deltat),'_sep_',int2str(sep)];
 	Type2_name = ['type2','_deltat_',int2str(deltat),'_sep_',int2str(sep)];
 	Type3_name = ['type3','_deltat_',int2str(deltat),'_sep_',int2str(sep)];
@@ -94,9 +89,7 @@ for deltat = DeltaT
 		jackknifed_Qi{Q,1} = jackknife(Qi{Q,1},fit_range,frozen,correlated);
 		for conf = 1:nType4 
 			jackknifed_Qi{Q,1}{conf,1}(:,2) = jackknifed_Qi{Q,1}{conf,1}(:,2) - ...
-				alpha{Q,1}(:,conf) .* (jackknifed_type3S5D{conf,1}(:,2) + jackknifed_type4S5D{conf,1}(:,2));
-
-			% jackknifed_Qi{Q,1}{conf,1}(:,2) = jackknifed_Qi{Q,1}{conf,1}(:,2);
+			alpha{Q,1}(:,conf) .* (jackknifed_type3S5D{conf,1}(:,2) + jackknifed_type4S5D{conf,1}(:,2));
 		end
 
 		% Qi{Q,1} = Qi_type1{Q,1} + Qi_type2{Q,1} + Qi_type3{Q,1};
@@ -132,9 +125,22 @@ for deltat = DeltaT
 
 	fn = ['Qi_result/Qi_result_deltat_',int2str(deltat),'_sep_',int2str(sep)];
 	save(fn,'Qi_result');
+
+	%2.7 plot each operator
+	% Qi_avg = zeros(size(jackknifed_Qi{1,1}{1,1},1),20);
+	% for Q = 1:10
+	% 	Qi_avg_tmp = [];
+	% 	for conf = 1:nType4
+	% 		Qi_avg_tmp = [Qi_avg_tmp, jackknifed_Qi{Q,1}{conf,1}(:,2)];
+	% 	end
+	% 	Qi_avg(:,2*Q-1) = mean(Qi_avg_tmp,2);
+	% 	Qi_avg(:,2*Q)   = std(Qi_avg_tmp,0,2)*nType4^0.5; 
+	% end
+	% fn = ['Qi_result/Qi_avg_delta_',int2str(deltat),'_sep_',int2str(sep)];
+	% csvwrite(fn, [(fit_range-1)',Qi_avg / zTotal]);
+	% system(['./change_csv.sh ',fn] ,'-echo');
 	
 end
-
 
 fprintf('EWA:\n');
 % error-weighted avg
