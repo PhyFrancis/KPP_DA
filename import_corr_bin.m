@@ -4,6 +4,6 @@ function corr = import_corr_bin(place,name,conf,field,bin_size)
   corr = import_corr(place,name,conf,field);
 
 	% bin the data
-	corr = bin(corr,bin_size);
+	corr = bin(corr,bin_size,size(field,2));
 
 end

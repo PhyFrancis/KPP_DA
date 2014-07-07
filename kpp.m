@@ -14,7 +14,7 @@ cal_effMass = 0;
 t_size = 64;
 t_trans = 0:63; 
 sep = 4;
-DeltaT = 10:2:10;
+DeltaT = 12:2:12;
 FigureVdis_name = ['FigureVdis_sep',int2str(sep)];
 
 Qi_result_glb = [];
