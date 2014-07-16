@@ -4,7 +4,7 @@
 run('conf.m');
 
 % analysis meson mass
-run('pipi_sep.m');
+run('pipi_I2_sep.m');
 
 %data analysis for K -> PiPi (I=0)
 %1 initialize fitting parameters:
@@ -49,9 +49,29 @@ for deltat = DeltaT
 		end
 	end
 
+	%2.5 fit each contraction
+	% jackknifed_Ci = cell(48,1);
+	% for C = 1:48
+	% 	jackknifed_Ci{C,1} = jackknife(Type1(:,C+[0:nType1-1]*48),fit_range,frozen,correlated);
+	% end
+	% Ci_result = cell(48,1);
+	% for C = 1:48
+	% 	for conf = 1:nType1
+	% 		deltaE = I2_result(conf,1) - kaon_result(conf,1);
+	% 		zPiPi = I2_result(conf,2);
+	% 		zK = kaon_result(conf,2);
+	% 		zTotal = (zPiPi * zK)^0.5 * exp(- I2_result(conf,1) * deltat) / sqrt(2); % sqrt(2) because only 1/2 of the kaon is contracting
+	% 		guess = jackknifed_Ci{C,1}{conf,1}(1,2);
+	% 		Ci_result{C,1} = [Ci_result{C,1}; fit(jackknifed_Ci{C,1}{conf,1},jackknifed_Ci{C,1}{conf,2},@(x1,x2,x3) exp_with_no_const(x1,x2,x3),guess,deltaE) / zTotal];
+	% 	end
+	% end
+	% for C = 1:48
+	% 	fprintf('C%d(I=2):\t%.6e\t std:\t %.6e\n',C,mean(Ci_result{C,1}),std(Ci_result{C,1})*(nType1-1)^0.5);
+	% end
+
 	%2.6 display result
 	for Q = [1,7,8]
-		fprintf('Q%d(I=0):\t%.6e\t std:\t %.6e\n',Q,mean(Qi_result{Q,1}),std(Qi_result{Q,1})*(nType1-1)^0.5);
+		fprintf('Q%d(I=2):\t%.6e\t std:\t %.6e\n',Q,mean(Qi_result{Q,1}),std(Qi_result{Q,1})*(nType1-1)^0.5);
 	end
 
 	fn = ['Qi_result/Qi_I2_result_deltat_',int2str(deltat),'_sep_',int2str(sep)];

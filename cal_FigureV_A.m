@@ -1,6 +1,9 @@
-function FigureV_A = cal_FigureV_A(FigureVdis, sep)
-	t_size = size(FigureVdis,1);
-	count = size(FigureVdis,2);
+function FigureV_A = cal_FigureV_A(FigureVdis1,FigureVdis2,sep)
+	if isequaln(size(FigureVdis1),size(FigureVdis2)) == 0
+		fprintf('cal_FigureV_A::size of two disconnected piece dont agree.\n');
+	end
+	t_size = size(FigureVdis1,1);
+	count = size(FigureVdis1,2);
 	FigureV_A = [];
 	for i = 1:count
 		tmp_col = [];
@@ -11,7 +14,7 @@ function FigureV_A = cal_FigureV_A(FigureVdis, sep)
 			  while snk > t_size
 					snk = snk - t_size;
 				end
-				tmp = tmp + FigureVdis(src,i) * FigureVdis(snk,i);
+				tmp = tmp + FigureVdis1(src,i) * FigureVdis2(snk,i);
 			end
 			tmp_col = [tmp_col; tmp / t_size];
 		end

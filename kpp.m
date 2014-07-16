@@ -4,17 +4,16 @@
 run('conf.m');
 
 % data analysis for meson mass
-run('pipi_sep.m');
+run('pipi_I0_sep.m');
 
 % data analysis for K -> PiPi (I=0)
 %1 initialize fitting parameters:
 frozen = 0;% 1 if doing frozen jackknife
 correlated = 0; % 1 if doing correlated fitting
 cal_effMass = 0;
-t_size = 64;
-t_trans = 0:63; 
+t_trans = 0:(t_size-1); 
 sep = 4;
-DeltaT = 12:2:12;
+DeltaT = 16:2:18;
 FigureVdis_name = ['FigureVdis_sep',int2str(sep)];
 
 Qi_result_glb = [];
@@ -127,18 +126,18 @@ for deltat = DeltaT
 	save(fn,'Qi_result');
 
 	%2.7 plot each operator
-	% Qi_avg = zeros(size(jackknifed_Qi{1,1}{1,1},1),20);
-	% for Q = 1:10
-	% 	Qi_avg_tmp = [];
-	% 	for conf = 1:nType4
-	% 		Qi_avg_tmp = [Qi_avg_tmp, jackknifed_Qi{Q,1}{conf,1}(:,2)];
-	% 	end
-	% 	Qi_avg(:,2*Q-1) = mean(Qi_avg_tmp,2);
-	% 	Qi_avg(:,2*Q)   = std(Qi_avg_tmp,0,2)*nType4^0.5; 
-	% end
-	% fn = ['Qi_result/Qi_avg_delta_',int2str(deltat),'_sep_',int2str(sep)];
-	% csvwrite(fn, [(fit_range-1)',Qi_avg / zTotal]);
-	% system(['./change_csv.sh ',fn] ,'-echo');
+	Qi_avg = zeros(size(jackknifed_Qi{1,1}{1,1},1),20);
+	for Q = 1:10
+		Qi_avg_tmp = [];
+		for conf = 1:nType4
+			Qi_avg_tmp = [Qi_avg_tmp, jackknifed_Qi{Q,1}{conf,1}(:,2)];
+		end
+		Qi_avg(:,2*Q-1) = mean(Qi_avg_tmp,2);
+		Qi_avg(:,2*Q)   = std(Qi_avg_tmp,0,2)*nType4^0.5; 
+	end
+	fn = ['Qi_result/Qi_avg_delta_',int2str(deltat),'_sep_',int2str(sep)];
+	csvwrite(fn, [(fit_range-1)',Qi_avg / zTotal]);
+	system(['./change_csv.sh ',fn] ,'-echo');
 	
 end
 
