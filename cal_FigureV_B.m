@@ -1,39 +1,22 @@
-function FigureV_B = cal_FigureV_B(FigureVdis, sep)
-
-	t_size = size(FigureVdis,1);
-	count = size(FigureVdis,2);
-	FigureV_B = [];
-
-	for i = 1:count
-
-		tmp = [];
-		for j = 1:count
-			if j==i
-				continue; % omitting i's piece
-			end
-			tmp = [tmp, FigureVdis(:,j)];
-		end
-		tmp_mean = mean(tmp,2);
-
-		tmp_col = [];
-		for dis = 0:t_size-1
-			tmp = 0;
-			for src = 1:t_size
-				snk = src + dis + sep;
-				while snk > t_size
-					snk = snk - t_size;
-				end
-				tmp = tmp + tmp_mean(src) * tmp_mean(snk);
-			end
-			tmp_col = [tmp_col; tmp / t_size];
-		end
-		FigureV_B = [FigureV_B,tmp_col];
-
+function FigureV_B = cal_FigureV_B(FigureVdis1, FigureVdis2, sep)
+	if isequaln(size(FigureVdis1),size(FigureVdis2)) == 0
+		fprintf('cal_FigureV_B::size of two disconnected piece dont agree.\n');
 	end
 
-	clear t_size
-	clear count;
-	clear tmp;
-	clear tmp_mean;
-	clear tmp_col;
+	FigureV_B = zeros(size(FigureVdis1));
+	t_size = size(FigureVdis1,1);
+	count = size(FigureVdis1,2);
+
+	sum1 = sum(FigureVdis1,2);
+	sum2 = sum(FigureVdis2,2);
+	jackVdis1 = (repmat(sum1,1,count) - FigureVdis1) / (count-1);
+	jackVdis2 = (repmat(sum2,1,count) - FigureVdis2) / (count-1);
+	
+
+	for t = 1:t_size
+		offset = rem(t-1+sep,t_size);
+		FigureV_B(t,:) = mean(jackVdis1 .* rotate(jackVdis2, offset));
+	end
+
+	clearvars -except FigureV_B;
 end

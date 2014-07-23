@@ -69,6 +69,11 @@ switch nGBC
 			ZpiRatio * tavg_import_corr_bin(place,[FigureC_name,'_B'],all_traj,t_trans,field,t_size,bin_size));
 		FigureD = 0.5 * (tavg_import_corr_bin(place,[FigureD_name,'_A'],all_traj,t_trans,field,t_size,bin_size) + ...
 			ZpiRatio * tavg_import_corr_bin(place,[FigureD_name,'_B'],all_traj,t_trans,field,t_size,bin_size));
+	case 3
+		FigureC = 0.25 * tavg_import_corr_bin(place,[FigureC_name,'_A'],all_traj,t_trans,field,t_size,bin_size) + ...
+			0.75 * ZpiRatio * tavg_import_corr_bin(place,[FigureC_name,'_B'],all_traj,t_trans,field,t_size,bin_size);
+		FigureD = 0.25 * tavg_import_corr_bin(place,[FigureD_name,'_A'],all_traj,t_trans,field,t_size,bin_size) + ...
+			0.75 * ZpiRatio * tavg_import_corr_bin(place,[FigureD_name,'_B'],all_traj,t_trans,field,t_size,bin_size);
 	otherwise 
 		fprintf('Number of G-parity twist: %d, not supported', nGBC);
 end

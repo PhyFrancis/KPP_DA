@@ -73,8 +73,8 @@ switch nGBC
 			tavg_import_corr_bin(place,[FigureR_name,'_B'],all_traj,t_trans,field,t_size,bin_size));
 		FigureVdis_1 = import_corr_bin(place,[FigureVdis_name,'_1'],all_traj,2,bin_size); % diagonal momentum
 		FigureVdis_2 = import_corr_bin(place,[FigureVdis_name,'_2'],all_traj,2,bin_size); % off-Diagonal momentum
-		FigureV_A  = 0.5 * (cal_FigureV_A(FigureVdis_1,FigureVdis_1,sep) + cal_FigureV_A(FigureVdis_1,FigureVdis_2,sep));
-		FigureVdis = 0.5 * (FigureVdis_1 + FigureVdis_2);
+		FigureV_A  = 0.5 * cal_FigureV_A(FigureVdis_1,FigureVdis_1,sep) + 0.5 * cal_FigureV_A(FigureVdis_1,FigureVdis_2,sep);
+		FigureV_B = 0.5 * cal_FigureV_B(FigureVdis_1, FigureVdis_1, sep) + 0.5 * cal_FigureV_B(FigureVdis_1, FigureVdis_2, sep); % This is the term to be subtracted
 	case 2
 		FigureC = 0.5 * (tavg_import_corr_bin(place,[FigureC_name,'_A'],all_traj,t_trans,field,t_size,bin_size) + ...
 			ZpiRatio * tavg_import_corr_bin(place,[FigureC_name,'_B'],all_traj,t_trans,field,t_size,bin_size));
@@ -84,8 +84,19 @@ switch nGBC
 			ZpiRatio * tavg_import_corr_bin(place,[FigureR_name,'_B'],all_traj,t_trans,field,t_size,bin_size));
 		FigureVdis_1 = import_corr_bin(place,[FigureVdis_name,'_1'],all_traj,2,bin_size); % diagonal momentum
 		FigureVdis_2 = import_corr_bin(place,[FigureVdis_name,'_2'],all_traj,2,bin_size) * ZpiRatio; % off-Diagonal momentum
-		FigureV_A  = 0.5 * (cal_FigureV_A(FigureVdis_1,FigureVdis_1,sep) + cal_FigureV_A(FigureVdis_1,FigureVdis_2,sep));
-		FigureVdis = 0.5 * (FigureVdis_1 + FigureVdis_2);
+		FigureV_A = 0.5 * cal_FigureV_A(FigureVdis_1,FigureVdis_1,sep) + 0.5 * cal_FigureV_A(FigureVdis_1,FigureVdis_2,sep);
+		FigureV_B = 0.5 * cal_FigureV_B(FigureVdis_1,FigureVdis_1,sep) + 0.5 * cal_FigureV_B(FigureVdis_1,FigureVdis_2,sep); % This is the term to be subtracted
+	case 3
+		FigureC = 0.25 * tavg_import_corr_bin(place,[FigureC_name,'_A'],all_traj,t_trans,field,t_size,bin_size) + ...
+			0.75 * ZpiRatio * tavg_import_corr_bin(place,[FigureC_name,'_B'],all_traj,t_trans,field,t_size,bin_size);
+		FigureD = 0.25 * tavg_import_corr_bin(place,[FigureD_name,'_A'],all_traj,t_trans,field,t_size,bin_size) + ...
+			0.75 * ZpiRatio * tavg_import_corr_bin(place,[FigureD_name,'_B'],all_traj,t_trans,field,t_size,bin_size);
+		FigureR = 0.25 * tavg_import_corr_bin(place,[FigureR_name,'_A'],all_traj,t_trans,field,t_size,bin_size) + ...
+			0.75 * ZpiRatio * tavg_import_corr_bin(place,[FigureR_name,'_B'],all_traj,t_trans,field,t_size,bin_size);
+		FigureVdis_1 = import_corr_bin(place,[FigureVdis_name,'_1'],all_traj,2,bin_size); % diagonal momentum
+		FigureVdis_2 = import_corr_bin(place,[FigureVdis_name,'_2'],all_traj,2,bin_size) * ZpiRatio; % off-Diagonal momentum
+		FigureV_A = 1.0/16 * cal_FigureV_A(FigureVdis_1,FigureVdis_1,sep) + 12.0/16 * cal_FigureV_A(FigureVdis_1,FigureVdis_2,sep) + 3.0/16 * cal_FigureV_A(FigureVdis_2,FigureVdis_2,sep);
+		FigureV_B = 1.0/16 * cal_FigureV_B(FigureVdis_1,FigureVdis_1,sep) + 12.0/16 * cal_FigureV_B(FigureVdis_1,FigureVdis_2,sep) + 3.0/16 * cal_FigureV_B(FigureVdis_2,FigureVdis_2,sep); % This is the term to be subtracted
 	otherwise 
 		fprintf('Number of G-parity twist: %d, not supported', nGBC);
 end
@@ -95,7 +106,6 @@ end
 % FigureR = tavg_import_corr_bin(place,FigureR_name,all_traj,t_trans,field,t_size,bin_size);
 % FigureVdis = import_corr_bin(place,FigureVdis_name,all_traj,2,bin_size);
 
-FigureV_B = cal_FigureV_B(FigureVdis,sep); % This is the term to be subtracted
 I2 = 2 * (FigureD - FigureC);
 I0V = 2 * FigureD + FigureC - 6 * FigureR;
 I0 = 2 * FigureD + FigureC - 6 * FigureR + 3 * FigureV_A;

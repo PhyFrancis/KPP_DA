@@ -19,6 +19,7 @@ Qi_result_glb = [];
 for deltat = DeltaT
 
 	fit_range = 5:(deltat-3);
+	% Type1_name = ['type1','_deltat_',int2str(deltat),'_sep_',int2str(sep)];
 	Type1_name = ['type1','_deltat_',int2str(deltat),'_sep_',int2str(sep)];
 
 	%2 I2 kpipi calculation
